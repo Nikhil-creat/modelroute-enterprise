@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ModelRoute Enterprise · Multimodal LLM Routing Platform</title>
+<meta name="description" content="Multimodal support-ticket routing: QLoRA LLM, CNN, agentic RAG and a confidence router. Designed and developed by NIKHIL CHARY SRIRAMOJU.">
+<meta name="author" content="NIKHIL CHARY SRIRAMOJU">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%B0%3C/text%3E%3C/svg%3E">
+<style>
+:root{--bg:#0b1020;--card:#131a30;--line:#24304f;--tx:#e8ecf8;--mu:#9aa6c7;--a:#22d3ee;--b:#8b5cf6;--ok:#34d399;--warn:#fbbf24}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
+a{color:var(--a);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:auto;padding:0 18px}
+header{position:sticky;top:0;z-index:20;background:rgba(11,16,32,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.nav{display:flex;align-items:center;gap:14px;height:58px}
+.brand{font-weight:800;letter-spacing:.3px}.brand span{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}
+nav{margin-left:auto;display:flex;gap:14px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}nav a{color:var(--mu);font-size:14px}
+.btn{background:linear-gradient(90deg,var(--a),var(--b));color:#06101f;border:0;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer;font-size:14px}
+.btn.alt{background:transparent;border:1px solid var(--line);color:var(--tx)}
+.hero{padding:56px 0 30px;text-align:center}
+.hero h1{font-size:clamp(30px,6vw,52px);line-height:1.1;margin:10px 0}
+.hero h1 span{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}
+.hero p{color:var(--mu);max-width:700px;margin:12px auto}
+.badge{display:inline-block;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 14px;font-size:13px;color:var(--mu)}.badge b{color:var(--tx)}
+section{padding:42px 0}h2{font-size:28px;margin:0 0 6px}.sub{color:var(--mu);margin:0 0 22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}.card h3{margin:0 0 6px;font-size:17px}.card p{margin:0;color:var(--mu);font-size:14px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.node{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:14px}.node.hl{border-color:var(--a)}.arr{color:var(--mu)}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+textarea,input,select{width:100%;background:#0d1428;color:var(--tx);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit;font-size:14px}
+textarea{min-height:90px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.trace{background:#0a0f20;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px;font:13px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;max-height:340px;overflow:auto}
+.trace .t{color:var(--a)}.trace .r{color:var(--ok)}.trace .e{color:#f87171}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:14px}.stat{background:#0d1428;border:1px solid var(--line);border-radius:10px;padding:10px;text-align:center}.stat b{display:block;font-size:22px;color:var(--a)}.stat small{color:var(--mu)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--line);padding:8px;text-align:right}th:first-child,td:first-child{text-align:left}.scroll{overflow-x:auto}
+pre{background:#0a0f20;border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:13px}
+.note{font-size:12px;color:var(--warn)}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:30px 0 40px;color:var(--mu);font-size:14px}
+footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}footer h4{color:var(--tx);margin:0 0 8px}footer a{display:block;margin:3px 0}
+.credit{text-align:center;margin-top:26px;color:var(--tx);font-weight:600}.credit span{background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}
+#fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:30;border-radius:99px;padding:13px 18px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#chat{position:fixed;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));width:min(400px,calc(100vw - 24px));height:min(560px,70vh);background:var(--card);border:1px solid var(--line);border-radius:16px;z-index:30;display:none;flex-direction:column;overflow:hidden}
+#chat.open{display:flex}.ch{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-weight:700}
+#msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}.m{padding:8px 11px;border-radius:12px;max-width:88%;font-size:14px;white-space:pre-wrap}.m.u{align-self:flex-end;background:#1d4ed8}.m.a{background:#1b2547}
+#cs{display:none;padding:10px;border-top:1px solid var(--line)}#cs.open{display:block}.ci{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}.ci input{flex:1}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <a class="brand" href="#home">Model<span>Route</span> Enterprise</a>
+  <nav><a href="#about-project">Features</a><a href="#architecture">Architecture</a><a href="#agent">Agent demo</a><a href="#router">Router</a><a href="#benchmark">Benchmark</a><a href="#quickstart">Quick start</a><a href="#about">About</a></nav>
+</div></header>
+
+<main class="wrap" id="home">
+<div class="hero">
+  <span class="badge">Designed &amp; developed by <b>NIKHIL CHARY SRIRAMOJU</b></span>
+  <h1>Route every ticket to the <span>cheapest model that can answer it</span></h1>
+  <p>A multimodal support platform that combines a 4-bit QLoRA fine-tuned LLM, a PyTorch CNN for attachments, agentic hybrid RAG, and a confidence router that falls back to a frontier model only when the local stack is unsure.</p>
+  <p><button class="btn" onclick="location.hash='agent'">Try the live agent</button> <button class="btn alt" onclick="toggleChat(true)">Ask the assistant</button></p>
+</div>
+
+<section id="about-project"><h2>What it does</h2><p class="sub">Four systems working as one pipeline.</p>
+<div class="grid">
+<div class="card"><h3>QLoRA fine-tuned LLM</h3><p>Llama-3-8B / Qwen-2.5-7B, NF4 + double quantization, r=16, α=32 on q/k/v/o projections, merged to FP16 for vLLM.</p></div>
+<div class="card"><h3>CNN vision router</h3><p>ResNet18 classifies attachments into UI_ERROR, HARDWARE_FAULT, SPAM_IMAGE and VALID_DOCUMENT with temperature-calibrated confidence.</p></div>
+<div class="card"><h3>Agentic hybrid RAG</h3><p>ReAct-style agent calls CNN, dense + BM25 knowledge search (with reflection) and an SLA lookup tool.</p></div>
+<div class="card"><h3>Confidence router</h3><p>C_total = w₁·C_text + w₂·C_vision + w₃·C_rag. Below the calibrated threshold, the ticket goes to GPT-4o, Claude or Groq.</p></div>
+</div></section>
+
+<section id="architecture"><h2>Architecture</h2><p class="sub">From ticket to decision, with a safety net.</p>
+<div class="flow">
+<div class="node">Ticket + image</div><span class="arr">→</span>
+<div class="node hl">CNN diagnostic</div><span class="arr">→</span>
+<div class="node hl">Agent · RAG · SLA tool</div><span class="arr">→</span>
+<div class="node hl">QLoRA LLM (vLLM)</div><span class="arr">→</span>
+<div class="node">Confidence engine</div><span class="arr">→</span>
+<div class="node">C ≥ τ ? <b style="color:var(--ok)">local</b> : <b style="color:var(--warn)">frontier</b></div>
+</div>
+<p class="sub" style="margin-top:14px;text-align:center">FastAPI serving · ChromaDB · Docker Compose · per-request latency and cost telemetry</p></section>
+
+<section id="agent"><h2>Live agent demo <span class="badge">Groq · free</span></h2>
+<p class="sub">A real tool-calling agent running in your browser with your own free Groq key. (The Python backend uses the actual CNN and vector store; here the tools are lightweight browser versions.)</p>
+<div class="card">
+<label>Sample ticket</label>
+<select id="sample"></select>
+<label>Ticket text</label><textarea id="ticket"></textarea>
+<div class="row"><div><label>Customer tier</label><select id="tier"><option>free</option><option>pro</option><option>enterprise</option></select></div>
+<div><label>Attachment (simulated CNN input)</label><select id="att"><option value="">none</option><option>UI_ERROR</option><option>HARDWARE_FAULT</option><option>VALID_DOCUMENT</option><option>SPAM_IMAGE</option></select></div></div>
+<p><button class="btn" id="run">Run agent</button> <button class="btn alt" onclick="toggleChat(true,true)">Set Groq key</button></p>
+<div class="trace" id="trace">Add your Groq key (console.groq.com → API Keys), then press Run agent.</div>
+</div></section>
+
+<section id="router"><h2>Router simulator</h2><p class="sub">Drag the threshold to see the cost/quality trade-off.</p>
+<div class="card"><label>Threshold τ = <b id="tv">0.85</b></label><input type="range" id="thr" min="0.5" max="0.99" step="0.01" value="0.85">
+<div class="stats"><div class="stat"><b id="s1">–</b><small>served locally</small></div><div class="stat"><b id="s2">–</b><small>accuracy</small></div><div class="stat"><b id="s3">–</b><small>quality retention</small></div><div class="stat"><b id="s4">–</b><small>cost vs frontier-only</small></div></div>
+<p class="note">Illustrative simulation on synthetic confidence scores, not measured results. Real numbers appear below after you run the benchmark.</p></div></section>
+
+<section id="benchmark"><h2>Benchmark</h2><p class="sub">Measured by <code>python -m evaluation.benchmark</code>; the file <code>docs/data/benchmark.json</code> feeds this table.</p>
+<div class="card scroll" id="bench">Loading…</div></section>
+
+<section id="quickstart"><h2>Quick start</h2><p class="sub">Full instructions are in the repository README.</p>
+<pre>pip install -r requirements.txt
+python -m data_pipeline.generate_synthetic_data
+python -m data_pipeline.build_vector_store
+python -m data_pipeline.split_data
+python -m vision_cnn.train_cnn
+python -m fine_tuning.train_qlora      # GPU
+python -m fine_tuning.merge_adapters
+python -m evaluation.calibrate_threshold
+python -m evaluation.benchmark
+docker compose -f deployment/docker-compose.yml up --build</pre></section>
+
+<section id="about"><h2>About the developer</h2>
+<div class="card"><h3>NIKHIL CHARY SRIRAMOJU</h3>
+<p>B.Tech Computer Science &amp; Engineering (2023–2027), Vaagdevi College of Engineering · Thorrur, Telangana, India</p>
+<p style="margin-top:8px"><b>Experience:</b> Machine Learning Engineer Intern, Yuva Intern (NSDC), Aug–Sep 2026 · Data Analytics Intern, Thiranex, Jul–Aug 2026</p>
+<p style="margin-top:8px"><b>Certifications:</b> NASSCOM / Skill India Digital Hub (AI-Data Engineering &amp; Cloud Infrastructure Analyst) · IBM SkillsBuild (AI Fundamentals) · Reliance Foundation (AI/ML Engineer Foundation)</p>
+<p style="margin-top:12px"><a href="https://github.com/Nikhil-creat">GitHub</a> · <a href="https://in.linkedin.com/in/nikhil-chary-sriramoju-95041b38a">LinkedIn</a> · <a href="mailto:sriramojunikhil66@gmail.com">Email</a></p></div></section>
+</main>
+
+<footer><div class="wrap">
+<div class="cols">
+<div><h4>ModelRoute Enterprise</h4>Multimodal LLM distillation, fine-tuning, agentic RAG and CNN routing.</div>
+<div><h4>Explore</h4><a href="#architecture">Architecture</a><a href="#agent">Agent demo</a><a href="#benchmark">Benchmark</a><a href="#quickstart">Quick start</a></div>
+<div><h4>Connect</h4><a href="https://github.com/Nikhil-creat">GitHub</a><a href="https://in.linkedin.com/in/nikhil-chary-sriramoju-95041b38a">LinkedIn</a><a href="mailto:sriramojunikhil66@gmail.com">Email</a></div>
+<div><h4>Privacy</h4>Your Groq key stays in this browser's localStorage and is sent only to api.groq.com. Demo outputs may be inaccurate.</div>
+</div>
+<div class="credit">Designed and developed by <span>NIKHIL CHARY SRIRAMOJU</span> · © 2026 · MIT License</div>
+</div></footer>
+
+<button class="btn" id="fab" onclick="toggleChat()">💬 Assistant</button>
+<div id="chat"><div class="ch"><span>Nikhil's Personal Assistant</span><span><a href="#" onclick="toggleSettings();return false">⚙</a> <a href="#" onclick="toggleChat(false);return false">✕</a></span></div>
+<div id="cs"><label>Groq API key (free)</label><input id="key" type="password" placeholder="gsk_..." autocomplete="off"><label>Model</label><input id="model" value="llama-3.3-70b-versatile"><p><button class="btn" onclick="saveKey()">Save</button> <button class="btn alt" onclick="clearKey()">Remove</button></p></div>
+<div id="msgs"></div><div class="ci"><input id="q" placeholder="Ask about the project or Nikhil…"><button class="btn" id="send">Send</button></div></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const store={get:k=>{try{return localStorage.getItem(k)||""}catch(e){return ""}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const getKey=()=>store.get("mr_groq_key"),getModel=()=>store.get("mr_groq_model")||"llama-3.3-70b-versatile";
+$("model").value=getModel();$("key").value=getKey();
+function saveKey(){store.set("mr_groq_key",$("key").value.trim());store.set("mr_groq_model",$("model").value.trim()||"llama-3.3-70b-versatile");toggleSettings(false);say("a","Saved. The key stays in this browser only.")}
+function clearKey(){store.del("mr_groq_key");$("key").value="";say("a","Key removed.")}
+function toggleSettings(f){$("cs").classList.toggle("open",f)}
+function toggleChat(f,settings){const c=$("chat");c.classList.toggle("open",f===undefined?!c.classList.contains("open"):f);if(settings)toggleSettings(true);if(c.classList.contains("open")&&!$("msgs").children.length)say("a","Hi! I'm Nikhil's assistant. Ask me about ModelRoute Enterprise or about Nikhil. Add a free Groq key via ⚙ to chat.")}
+function say(r,t){const d=document.createElement("div");d.className="m "+r;d.textContent=t;$("msgs").appendChild(d);$("msgs").scrollTop=1e9;return d}
+async function groq(messages,tools){
+  const key=getKey();if(!key)throw new Error("Add your free Groq API key first (⚙ in the assistant).");
+  const body={model:getModel(),messages,temperature:0.2};if(tools){body.tools=tools;body.tool_choice="auto"}
+  const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+key},body:JSON.stringify(body)});
+  const j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||("HTTP "+r.status));return j}
+
+/* ---- personal assistant ---- */
+const CTX="You are the personal assistant on the portfolio page of NIKHIL CHARY SRIRAMOJU. Be concise and friendly. Facts about Nikhil: B.Tech CSE (2023-2027) at Vaagdevi College of Engineering, Thorrur, Telangana, India; ML Engineer Intern at Yuva Intern (NSDC) Aug-Sep 2026; Data Analytics Intern at Thiranex Jul-Aug 2026; certifications from NASSCOM/Skill India Digital Hub, IBM SkillsBuild, Reliance Foundation; GitHub github.com/Nikhil-creat. Project ModelRoute Enterprise: multimodal support-ticket routing with a 4-bit QLoRA fine-tuned Llama-3-8B/Qwen-2.5-7B (r=16, alpha=32), PyTorch ResNet18 CNN for attachments (UI_ERROR, HARDWARE_FAULT, SPAM_IMAGE, VALID_DOCUMENT), agentic hybrid RAG (ChromaDB + BM25), confidence router C_total=w1*C_text+w2*C_vision+w3*C_rag falling back to GPT-4o/Claude/Groq below a calibrated threshold, FastAPI + Docker + vLLM. Never invent facts about Nikhil beyond these; say you don't know instead. Benchmarks are only real once the user runs evaluation.benchmark.";
+let hist=[{role:"system",content:CTX}];
+async function ask(){const q=$("q").value.trim();if(!q)return;$("q").value="";say("u",q);hist.push({role:"user",content:q});const w=say("a","…");
+  try{const j=await groq([hist[0],...hist.slice(-11)]);const t=j.choices[0].message.content;w.textContent=t;hist.push({role:"assistant",content:t})}catch(e){w.textContent="⚠ "+e.message;hist.pop()}}
+$("send").onclick=ask;$("q").addEventListener("keydown",e=>{if(e.key==="Enter")ask()});
+
+/* ---- agent demo ---- */
+const KB=[
+["UI bug: dashboard blank, form unresponsive, mobile layout, upload error","ui_bug","Frontend Engineering","hard refresh, check build hash, capture console and HAR file, disable feature flag"],
+["Hardware failure: boot loop, kernel panic, overheating, sensor not detected, battery","hardware_failure","Hardware Support","power cycle, reflash firmware, collect crash dump, open RMA"],
+["Billing issue: duplicate charge, wrong tax, refund missing, card declined","billing_issue","Billing & Finance","compare transaction ids, issue credit note or refund, update payment method"],
+["Account access: password reset email, MFA lockout, SSO loop, locked account","account_access","Identity & Access","verify identity, recovery code, check IdP certificate, unlock account"],
+["Performance degradation: API latency, slow reports, 5xx errors, queue backlog","performance_degradation","Platform SRE","check status page, compare p95 to baseline, roll back deploy, scale workers"],
+["Security incident: suspicious logins, leaked API key, phishing, data exposure","security_incident","Security Operations","revoke keys, force sign-out, preserve audit logs, engage incident commander"],
+["Feature request: dark mode, bulk export, roles, integrations","feature_request","Product Management","log on product board, share roadmap, offer workaround"],
+["Spam or irrelevant: prizes, phishing bait, test messages, solicitations","spam_or_irrelevant","Trust & Safety","do not click links, close ticket, block sender"]];
+const SLA={enterprise:{P1:1,P2:4,P3:8,P4:24},pro:{P1:4,P2:8,P3:24,P4:72},free:{P1:24,P2:48,P3:72,P4:120}};
+const SAMPLES=[["Production outage on our device","The rack controller keeps rebooting with a kernel panic since the firmware update. Production is completely down. Attached is a photo of the crash dump.","enterprise","HARDWARE_FAULT"],["Duplicate charge","We were charged twice for the same invoice. Not urgent, please advise.","pro","VALID_DOCUMENT"],["Suspicious logins","We saw unrecognized sign-ins on an admin account from another country.","enterprise","UI_ERROR"],["Prize spam","CONGRATULATIONS you have been selected to win a free prize. Click now!","free","SPAM_IMAGE"]];
+SAMPLES.forEach((s,i)=>{const o=document.createElement("option");o.value=i;o.textContent=s[0];$("sample").appendChild(o)});
+function loadSample(){const s=SAMPLES[$("sample").value];$("ticket").value=s[1];$("tier").value=s[2];$("att").value=s[3]}
+$("sample").onchange=loadSample;loadSample();
+const words=t=>t.toLowerCase().match(/[a-z0-9]+/g)||[];
+const TOOLS=[
+{type:"function",function:{name:"vision_diagnostic",description:"Classify the ticket attachment (CNN).",parameters:{type:"object",properties:{},required:[]}}},
+{type:"function",function:{name:"kb_search",description:"Search internal knowledge-base articles.",parameters:{type:"object",properties:{query:{type:"string"}},required:["query"]}}},
+{type:"function",function:{name:"account_lookup",description:"Get SLA response hours for a tier and priority.",parameters:{type:"object",properties:{customer_tier:{type:"string"},priority:{type:"string"}},required:["customer_tier"]}}}];
+function runTool(n,a){
+  if(n==="vision_diagnostic"){const l=$("att").value;return l?{label:l,confidence:0.96,simulated:true}:{label:null,note:"no attachment"}}
+  if(n==="kb_search"){const q=new Set(words(a.query||""));return KB.map(k=>({title:k[0],intent:k[1],department:k[2],steps:k[3],score:words(k[0]+" "+k[3]).filter(w=>q.has(w)).length})).sort((x,y)=>y.score-x.score).slice(0,2)}
+  if(n==="account_lookup"){const t=SLA[a.customer_tier];return t?{tier:a.customer_tier,response_hours:a.priority?t[a.priority]:t}:{found:false}}
+  return {error:"unknown tool"}}
+function log(c,t){const s=document.createElement("div");s.className=c;s.textContent=t;$("trace").appendChild(s);$("trace").scrollTop=1e9}
+$("run").onclick=async()=>{
+  $("trace").textContent="";$("run").disabled=true;
+  const sys="You are the ModelRoute triage agent. Use tools as needed: vision_diagnostic only if an attachment exists, kb_search for the ticket, account_lookup for the SLA after choosing a priority. Finish with ONLY a JSON object: {\"intent\": one of ["+KB.map(k=>k[1]).join(", ")+"], \"priority\": P1-P4, \"target_department\": string, \"rag_sources\": [titles], \"tool_calls_made\": [tool names]}. P1 is critical.";
+  const msgs=[{role:"system",content:sys},{role:"user",content:"Customer tier: "+$("tier").value+"\nAttachment present: "+($("att").value?"yes":"no")+"\nTicket: "+$("ticket").value}];
+  try{for(let i=0;i<6;i++){
+    const m=(await groq(msgs,TOOLS)).choices[0].message;
+    if(m.tool_calls&&m.tool_calls.length){msgs.push({role:"assistant",content:m.content||"",tool_calls:m.tool_calls});
+      for(const c of m.tool_calls){let a={};try{a=JSON.parse(c.function.arguments||"{}")}catch(e){}
+        log("t","→ "+c.function.name+"("+JSON.stringify(a)+")");const out=runTool(c.function.name,a);log("r","← "+JSON.stringify(out));
+        msgs.push({role:"tool",tool_call_id:c.id,content:JSON.stringify(out)})}}
+    else{log("t","✔ decision");log("r",m.content);break}}}
+  catch(e){log("e","⚠ "+e.message)}finally{$("run").disabled=false}};
+
+/* ---- router simulator ---- */
+let seed=7;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+const SIM=Array.from({length:800},()=>{const c=1-Math.pow(rnd(),2.1)*0.55;return{c,ok:rnd()<0.5+0.47*c}});
+const FA=0.97,LC=0.0004,FC=0.0075;
+function sim(){const t=+$("thr").value;$("tv").textContent=t.toFixed(2);let fb=0,ok=0;
+  SIM.forEach(s=>{if(s.c<t){fb++;ok+=rndFix(s)}else ok+=s.ok?1:0});
+  const n=SIM.length,acc=ok/n,cost=(n*LC+fb*FC)/n;
+  $("s1").textContent=(100-100*fb/n).toFixed(0)+"%";$("s2").textContent=(100*acc).toFixed(1)+"%";$("s3").textContent=(100*acc/FA).toFixed(0)+"%";$("s4").textContent=(100*cost/FC).toFixed(0)+"%"}
+const rndFix=s=>(s.c*1000%1)<FA?1:0;
+$("thr").oninput=sim;sim();
+
+/* ---- benchmark table ---- */
+fetch("data/benchmark.json").then(r=>r.json()).then(d=>{const b=$("bench");
+  if(d.status!=="measured"){b.innerHTML="No benchmark has been run yet. After training, run <code>python -m evaluation.benchmark</code>, commit <code>docs/data/benchmark.json</code> and this table fills in automatically.";return}
+  const rows=d.modes.map(m=>`<tr><td>${m.mode}</td><td>${m.accuracy.toFixed(1)}</td><td>${m.macro_f1.toFixed(1)}</td><td>${m.p95_latency_ms.toFixed(0)}</td><td>${m.total_tokens}</td><td>${m.cost_per_1k_usd.toFixed(3)}</td><td>${m.fallback_rate_pct.toFixed(1)}</td><td>${m.quality_retention_pct.toFixed(1)}</td></tr>`).join("");
+  b.innerHTML=`<table><thead><tr><th>Mode</th><th>Acc %</th><th>Macro-F1</th><th>p95 ms</th><th>Tokens</th><th>$/1k</th><th>Fallback %</th><th>Retention %</th></tr></thead><tbody>${rows}</tbody></table><p class="note" style="color:var(--mu)">n=${d.n} ${d.split} tickets · threshold ${d.threshold} · frontier ${d.frontier_model}</p>`
+}).catch(()=>{$("bench").textContent="Benchmark data unavailable."});
+</script>
+</body>
+</html>

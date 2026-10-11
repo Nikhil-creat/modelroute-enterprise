@@ -1,0 +1,74 @@
+# ModelRoute Enterprise stack: FastAPI app + ChromaDB vector service + vLLM local inference worker.
+# Designed and developed by NIKHIL CHARY SRIRAMOJU.
+# Run from the project root:
+#   cp .env.example .env   # add your keys
+#   docker compose -f deployment/docker-compose.yml --env-file .env up --build
+name: modelroute
+
+services:
+  chroma:
+    image: chromadb/chroma:0.5.5
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+    volumes:
+      - chroma_data:/chroma/chroma
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+
+  vllm:
+    image: vllm/vllm-openai:v0.6.3
+    command: >
+      --model /models/merged_fp16
+      --served-model-name modelroute-local
+      --dtype float16
+      --max-model-len 2048
+      --gpu-memory-utilization 0.85
+    volumes:
+      - ../artifacts/merged_fp16:/models/merged_fp16:ro
+    ports:
+      - "8000:8000"
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile
+    depends_on:
+      - chroma
+      - vllm
+    environment:
+      CHROMA_HOST: chroma
+      CHROMA_PORT: "8000"
+      VLLM_BASE_URL: http://vllm:8000/v1
+      MR_LOCAL_MODEL_NAME: modelroute-local
+      MR_FRONTIER_PROVIDER: ${MR_FRONTIER_PROVIDER:-groq}
+      MR_ROUTER_THRESHOLD: ${MR_ROUTER_THRESHOLD:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+    volumes:
+      - ../data:/app/data
+      - ../artifacts:/app/artifacts
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  chroma_data:
