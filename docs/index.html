@@ -62,13 +62,14 @@ body{background:radial-gradient(1200px 600px at 80% -10%,rgba(139,92,246,.18),tr
 details{background:rgba(19,26,48,.62);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}summary{cursor:pointer;font-weight:600}details p{color:var(--mu);margin:8px 0 0}
 .live:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px;animation:glow 1.4s infinite}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+canvas.fm{width:31%;max-width:150px;height:auto;border:1px solid var(--line);border-radius:8px;image-rendering:pixelated}.hit{margin-top:10px}.hit i{display:block;height:6px;border-radius:4px;background:linear-gradient(90deg,var(--a),var(--b))}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas><div id="pg"></div>
 <header><div class="wrap nav">
   <a class="brand" href="#home">Model<span>Route</span> Enterprise</a>
-  <nav><a href="#about-project">Features</a><a href="#capabilities">Capabilities</a><a href="#architecture">Architecture</a><a href="#agent">Agent demo</a><a href="#router">Router</a><a href="#benchmark">Benchmark</a><a href="#quickstart">Quick start</a><a href="#about">About</a></nav>
+  <nav><a href="#about-project">Features</a><a href="#capabilities">Capabilities</a><a href="#architecture">Architecture</a><a href="#agent">Agent demo</a><a href="#rag">RAG lab</a><a href="#vision">Vision lab</a><a href="#router">Router</a><a href="#data">Data</a><a href="#docker">Docker</a><a href="#benchmark">Benchmark</a><a href="#quickstart">Quick start</a><a href="#about">About</a></nav>
 </div></header>
 
 <main class="wrap" id="home">
@@ -122,15 +123,29 @@ details{background:rgba(19,26,48,.62);border:1px solid var(--line);border-radius
 <div class="trace" id="trace">Add your Groq key (console.groq.com → API Keys), then press Run agent.</div>
 </div></section>
 
+<section id="rag"><h2>RAG lab <span class="badge">BM25 · in browser</span></h2><p class="sub">Retrieve from the 32-article knowledge base, then ask Groq for an answer grounded in the hits. The Python stack fuses this with dense MiniLM vectors.</p>
+<div class="card"><label>Ticket or question</label><textarea id="rq">Rack controller reboots with a kernel panic after the firmware update</textarea>
+<p><button class="btn" id="r1">Retrieve</button> <button class="btn alt" id="r2">Answer with Groq</button></p><div id="rh"></div><div class="trace" id="ra" style="display:none"></div></div></section>
+<section id="vision"><h2>Vision lab <span class="badge">CNN-style · in browser</span></h2><p class="sub">Upload a screenshot or photo. The page applies real convolution filters (Sobel, Laplacian) and a colour/edge-statistics classifier, then sets the agent's attachment. This is a lightweight demo; the trained ResNet18 runs in the Python backend.</p>
+<div class="card"><input type="file" id="vf" accept="image/*"><div style="display:flex;gap:8px;margin-top:12px"><canvas class="fm" id="c0" width="96" height="96"></canvas><canvas class="fm" id="c1" width="96" height="96"></canvas><canvas class="fm" id="c2" width="96" height="96"></canvas></div>
+<p class="note" style="color:var(--mu)">original · Sobel edges · Laplacian</p><div class="trace" id="vr">Choose an image to analyse.</div></div></section>
 <section id="router"><h2>Router simulator</h2><p class="sub">Drag the threshold to see the cost/quality trade-off.</p>
 <div class="card"><label>Threshold τ = <b id="tv">0.85</b></label><input type="range" id="thr" min="0.5" max="0.99" step="0.01" value="0.85">
 <div class="stats"><div class="stat"><b id="s1">–</b><small>served locally</small></div><div class="stat"><b id="s2">–</b><small>accuracy</small></div><div class="stat"><b id="s3">–</b><small>quality retention</small></div><div class="stat"><b id="s4">–</b><small>cost vs frontier-only</small></div></div>
 <p class="note">Illustrative simulation on synthetic confidence scores, not measured results. Real numbers appear below after you run the benchmark.</p></div>
 <div class="card" style="margin-top:14px"><b class="live">Live routing stream</b> <span class="note">(simulated)</span><div class="trace" id="feed" style="max-height:190px"></div></div></section>
 
+<section id="data"><h2>Dataset &amp; knowledge base</h2><p class="sub">Measured from the generated data in this project (seed 42).</p><div class="grid" id="stats"></div></section>
 <section id="benchmark"><h2>Benchmark</h2><p class="sub">Measured by <code>python -m evaluation.benchmark</code>; the file <code>docs/data/benchmark.json</code> feeds this table.</p>
 <div class="card scroll" id="bench">Loading…</div></section>
 
+<section id="docker"><h2>Docker deployment</h2><p class="sub">Multi-stage CUDA image plus three services.</p>
+<div class="flow"><div class="node hl">api · FastAPI :8080</div><span class="arr">→</span><div class="node hl">vllm · modelroute-local :8000</div><span class="arr">+</span><div class="node hl">chroma · vectors :8001</div><span class="arr">+</span><div class="node">./data · ./artifacts · .env</div></div>
+<pre style="margin-top:14px">cp .env.example .env
+docker compose -f deployment/docker-compose.yml --env-file .env up --build
+docker compose -f deployment/docker-compose.yml run --rm api python -m data_pipeline.build_vector_store
+curl localhost:8080/health</pre>
+<div class="grid"><div class="card"><h3>Multi-stage build</h3><p>A CUDA devel stage builds the virtualenv; the slim runtime copies it, runs as non-root and exposes a health check.</p></div><div class="card"><h3>GPU scheduling</h3><p>Compose reserves NVIDIA devices for vLLM and the API; the merged FP16 model is mounted read-only.</p></div><div class="card"><h3>Config via environment</h3><p>Provider, threshold and API keys come from .env; no secret is baked into an image.</p></div></div></section>
 <section id="quickstart"><h2>Quick start</h2><p class="sub">Full instructions are in the repository README.</p>
 <pre>pip install -r requirements.txt
 python -m data_pipeline.generate_synthetic_data
@@ -216,6 +231,7 @@ const TOOLS=[
 {type:"function",function:{name:"account_lookup",description:"Get SLA response hours for a tier and priority.",parameters:{type:"object",properties:{customer_tier:{type:"string"},priority:{type:"string"}},required:["customer_tier"]}}}];
 function runTool(n,a){
   if(n==="vision_diagnostic"){const l=$("att").value;return l?{label:l,confidence:0.96,simulated:true}:{label:null,note:"no attachment"}}
+  if(n==="kb_search"&&IDX){return rag(a.query||"",3).map(x=>({kb_id:x.kb_id,title:x.title,department:x.department,steps:x.steps.slice(0,2),score:+x.score.toFixed(2)}))}
   if(n==="kb_search"){const q=new Set(words(a.query||""));return KB.map(k=>({title:k[0],intent:k[1],department:k[2],steps:k[3],score:words(k[0]+" "+k[3]).filter(w=>q.has(w)).length})).sort((x,y)=>y.score-x.score).slice(0,2)}
   if(n==="account_lookup"){const t=SLA[a.customer_tier];return t?{tier:a.customer_tier,response_hours:a.priority?t[a.priority]:t}:{found:false}}
   return {error:"unknown tool"}}
@@ -269,6 +285,32 @@ document.querySelectorAll(".reveal,.hero").forEach(e=>io.observe(e));
 document.querySelectorAll("pre").forEach(p=>{const b=document.createElement("button");b.className="btn alt cp";b.textContent="Copy";b.onclick=()=>{navigator.clipboard.writeText(p.innerText.replace(/^Copy\n?/,"")).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1400)})};p.appendChild(b)});
 const INT=KB.map(k=>k[1]);setInterval(()=>{if(document.hidden)return;const c=1-Math.pow(Math.random(),2.1)*.55,t=+$("thr").value,loc=c>=t,f=$("feed"),d=document.createElement("div");
   d.className=loc?"r":"w";d.textContent=new Date().toLocaleTimeString()+"  "+INT[Math.random()*INT.length|0].padEnd(24)+" C="+c.toFixed(2)+"  → "+(loc?"LOCAL":"FRONTIER");f.prepend(d);while(f.children.length>30)f.lastChild.remove()},1500);
+
+/* ---- RAG lab, stats, vision lab ---- */
+let KBD=[],IDX=null;const tk=t=>(t.toLowerCase().match(/[a-z0-9]+/g)||[]).filter(w=>w.length>2);
+function build(){const docs=KBD.map(a=>tk(a.title+" "+a.symptoms.join(" ")+" "+a.steps.join(" "))),df={};docs.forEach(d=>new Set(d).forEach(w=>df[w]=(df[w]||0)+1));IDX={docs,N:docs.length,avg:docs.reduce((s,d)=>s+d.length,0)/docs.length,df}}
+function rag(q,k=3){if(!IDX)return[];const qs=tk(q);return KBD.map((a,i)=>{const d=IDX.docs[i],tf={};d.forEach(w=>tf[w]=(tf[w]||0)+1);let s=0;
+  qs.forEach(w=>{if(!tf[w])return;s+=Math.log(1+(IDX.N-IDX.df[w]+.5)/(IDX.df[w]+.5))*tf[w]*2.2/(tf[w]+1.2*(.25+.75*d.length/IDX.avg))});return{...a,score:s}}).sort((x,y)=>y.score-x.score).slice(0,k)}
+fetch("data/kb.json").then(r=>r.json()).then(d=>{KBD=d;build()}).catch(()=>{});
+async function doRag(llm){const q=$("rq").value.trim(),h=rag(q,3),o=$("ra");if(!h.length){$("rh").textContent="Knowledge base not loaded yet.";return}
+  const top=h[0].score||1;$("rh").innerHTML=h.map(x=>`<div class="hit"><b>[${x.kb_id}] ${x.title}</b> <small style="color:var(--mu)">${x.department} · score ${x.score.toFixed(2)}</small><i style="width:${Math.max(4,100*x.score/top)}%"></i></div>`).join("");
+  if(!llm){o.style.display="none";return}o.style.display="block";o.textContent="Asking Groq…";
+  const ctx=h.map(x=>`[${x.kb_id}] ${x.title}\nSymptoms: ${x.symptoms.join("; ")}\nSteps: ${x.steps.join(" ")}`).join("\n\n");
+  try{const j=await groq([{role:"system",content:"Answer the support ticket using ONLY the context. Cite article ids like [KB-0001]. If the context is insufficient, say so. Maximum 120 words."},{role:"user",content:"Context:\n"+ctx+"\n\nTicket: "+q}]);o.textContent=j.choices[0].message.content}catch(e){o.textContent="⚠ "+e.message}}
+$("r1").onclick=()=>doRag(false);$("r2").onclick=()=>doRag(true);
+function bars(t,o){const m=Math.max(...Object.values(o));return `<div class="card"><h3>${t}</h3>`+Object.entries(o).map(([k,v])=>`<div style="font-size:12px;color:var(--mu);margin-top:6px">${k} · ${v}</div><div style="height:7px;border-radius:4px;background:linear-gradient(90deg,var(--a),var(--b));width:${100*v/m}%"></div>`).join("")+"</div>"}
+fetch("data/stats.json").then(r=>r.json()).then(d=>{$("stats").innerHTML=`<div class="card"><h3>Corpus</h3><p>${d.tickets.toLocaleString()} tickets · ${d.with_image.toLocaleString()} with attachments · ${d.hard} hard cases · ${d.kb_articles} KB articles · ${d.chunks} chunks</p></div>`+bars("Intents",d.intent)+bars("Priority",d.priority)+bars("Visual classes",d.visual)+bars("Customer tier",d.tier)+bars("Split",d.split)}).catch(()=>{$("stats").textContent="Stats unavailable."});
+$("vf").onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const S=96,n=S*S,c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d");x.drawImage(im,0,0,S,S);
+  const d=x.getImageData(0,0,S,S).data,g=new Float32Array(n);let lum=0,sat=0,red=0,gd=0;
+  for(let i=0;i<n;i++){const r=d[4*i],gg=d[4*i+1],b=d[4*i+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b);g[i]=.299*r+.587*gg+.114*b;lum+=g[i];sat+=mx?(mx-mn)/mx:0;if(r>150&&gg<100&&b<100)red++;if(gg>r+20&&gg>b+20)gd++}
+  lum/=n*255;sat/=n;red/=n;gd/=n;$("c0").getContext("2d").drawImage(im,0,0,S,S);
+  const fm=(k,id)=>{const o=new Float32Array(n);let hit=0;for(let y=1;y<S-1;y++)for(let u=1;u<S-1;u++){let s=0;for(let j=0;j<9;j++)s+=k[j]*g[(y+(j/3|0)-1)*S+u+j%3-1];o[y*S+u]=Math.abs(s);hit+=Math.abs(s)>80}
+    const cx=$(id).getContext("2d"),im2=cx.createImageData(S,S);for(let i=0;i<n;i++){const v=Math.min(255,o[i]);im2.data.set([v,v,v,255],4*i)}cx.putImageData(im2,0,0);return hit/n};
+  const edge=(fm([-1,0,1,-2,0,2,-1,0,1],"c1")+fm([0,1,0,1,-4,1,0,1,0],"c2"))/2,dark=1-lum;
+  const sc={UI_ERROR:2.2*Math.min(red*25,1)+.6*lum,HARDWARE_FAULT:2.4*Math.max(0,dark-.35)+1.2*Math.min(gd*3,1),SPAM_IMAGE:2.6*Math.max(0,sat-.3)+.4*edge,VALID_DOCUMENT:1.4*lum*(1-sat)+.8*Math.min(edge*3,1)};
+  const ks=Object.keys(sc),ex=ks.map(k=>Math.exp(sc[k]/.4)),z=ex.reduce((a,b)=>a+b),pr=ex.map(v=>v/z),bi=pr.indexOf(Math.max(...pr));
+  $("att").value=ks[bi];$("vr").textContent="Predicted: "+ks[bi]+" ("+(100*pr[bi]).toFixed(0)+"%)\n"+ks.map((k,i)=>k.padEnd(16)+(100*pr[i]).toFixed(1)+"%").join("\n")+"\nluminance "+lum.toFixed(2)+" · saturation "+sat.toFixed(2)+" · edge density "+edge.toFixed(2)+"\nAgent demo attachment set to "+ks[bi]+" (demo heuristic, not the trained CNN)."};
+  im.src=URL.createObjectURL(f)};
 </script>
 </body>
 </html>
