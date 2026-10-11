@@ -47,12 +47,28 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr
 #chat.open{display:flex}.ch{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-weight:700}
 #msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}.m{padding:8px 11px;border-radius:12px;max-width:88%;font-size:14px;white-space:pre-wrap}.m.u{align-self:flex-end;background:#1d4ed8}.m.a{background:#1b2547}
 #cs{display:none;padding:10px;border-top:1px solid var(--line)}#cs.open{display:block}.ci{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}.ci input{flex:1}
+
+#bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55}#pg{position:fixed;top:0;left:0;height:3px;width:0;z-index:40;background:linear-gradient(90deg,var(--a),var(--b));box-shadow:0 0 12px var(--a)}
+header,main,footer{position:relative;z-index:1}.brand{white-space:nowrap;font-size:15px}
+body{background:radial-gradient(1200px 600px at 80% -10%,rgba(139,92,246,.18),transparent),radial-gradient(900px 500px at 0% 10%,rgba(34,211,238,.12),transparent),var(--bg)}
+.card{background:rgba(19,26,48,.62);backdrop-filter:blur(10px);transition:.25s}.card:hover{border-color:var(--a);box-shadow:0 0 28px rgba(34,211,238,.16);transform:translateY(-2px)}
+.hero h1{text-shadow:0 0 40px rgba(34,211,238,.25)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:26px auto 8px;max-width:760px}.kpi{border:1px solid var(--line);border-radius:12px;padding:12px;background:rgba(19,26,48,.6)}.kpi b{display:block;font-size:28px;background:linear-gradient(90deg,var(--a),var(--b));-webkit-background-clip:text;color:transparent}.kpi small{color:var(--mu)}
+.marq{overflow:hidden;white-space:nowrap;border-block:1px solid var(--line);padding:10px 0;margin:18px 0;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}.marq div{display:inline-block;animation:mq 38s linear infinite}.marq span{margin:0 18px;color:var(--mu);font-size:14px}.marq span:before{content:"◆ ";color:var(--a)}
+@keyframes mq{to{transform:translateX(-50%)}}@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(34,211,238,0)}50%{box-shadow:0 0 18px rgba(34,211,238,.55)}}
+.node.hl{animation:glow 2.4s infinite}.arr{animation:glow 2.4s infinite;border-radius:50%}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}.reveal.in{opacity:1;transform:none}
+.trace .w{color:var(--warn)}pre{position:relative}.cp{position:absolute;top:6px;right:6px;padding:3px 9px;font-size:12px}
+details{background:rgba(19,26,48,.62);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}summary{cursor:pointer;font-weight:600}details p{color:var(--mu);margin:8px 0 0}
+.live:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px;animation:glow 1.4s infinite}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
 </style>
 </head>
 <body>
+<canvas id="bg"></canvas><div id="pg"></div>
 <header><div class="wrap nav">
   <a class="brand" href="#home">Model<span>Route</span> Enterprise</a>
-  <nav><a href="#about-project">Features</a><a href="#architecture">Architecture</a><a href="#agent">Agent demo</a><a href="#router">Router</a><a href="#benchmark">Benchmark</a><a href="#quickstart">Quick start</a><a href="#about">About</a></nav>
+  <nav><a href="#about-project">Features</a><a href="#capabilities">Capabilities</a><a href="#architecture">Architecture</a><a href="#agent">Agent demo</a><a href="#router">Router</a><a href="#benchmark">Benchmark</a><a href="#quickstart">Quick start</a><a href="#about">About</a></nav>
 </div></header>
 
 <main class="wrap" id="home">
@@ -61,7 +77,10 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr
   <h1>Route every ticket to the <span>cheapest model that can answer it</span></h1>
   <p>A multimodal support platform that combines a 4-bit QLoRA fine-tuned LLM, a PyTorch CNN for attachments, agentic hybrid RAG, and a confidence router that falls back to a frontier model only when the local stack is unsure.</p>
   <p><button class="btn" onclick="location.hash='agent'">Try the live agent</button> <button class="btn alt" onclick="toggleChat(true)">Ask the assistant</button></p>
+  <div class="kpis"><div class="kpi"><b data-n="8">0</b><small>intents</small></div><div class="kpi"><b data-n="4">0</b><small>CNN visual classes</small></div><div class="kpi"><b data-n="3200">0</b><small>synthetic tickets</small></div><div class="kpi"><b data-n="3">0</b><small>agent tools</small></div></div>
 </div>
+<div class="marq"><div><span>PyTorch</span><span>QLoRA · PEFT · TRL</span><span>bitsandbytes NF4</span><span>vLLM</span><span>ChromaDB + FAISS</span><span>BM25 hybrid search</span><span>ReAct agent</span><span>FastAPI · Pydantic</span><span>Docker Compose</span><span>Groq · GPT-4o · Claude</span><span>PyTorch</span><span>QLoRA · PEFT · TRL</span><span>bitsandbytes NF4</span><span>vLLM</span><span>ChromaDB + FAISS</span><span>BM25 hybrid search</span><span>ReAct agent</span><span>FastAPI · Pydantic</span><span>Docker Compose</span><span>Groq · GPT-4o · Claude</span></div></div>
+<div>
 
 <section id="about-project"><h2>What it does</h2><p class="sub">Four systems working as one pipeline.</p>
 <div class="grid">
@@ -71,6 +90,15 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr
 <div class="card"><h3>Confidence router</h3><p>C_total = w₁·C_text + w₂·C_vision + w₃·C_rag. Below the calibrated threshold, the ticket goes to GPT-4o, Claude or Groq.</p></div>
 </div></section>
 
+<section id="capabilities"><h2>Platform capabilities</h2><p class="sub">Production concerns built in, not bolted on.</p>
+<div class="grid">
+<div class="card"><h3>Calibrated confidence</h3><p>CNN logits are temperature-scaled on validation data; text confidence is the mean token probability of the generated JSON.</p></div>
+<div class="card"><h3>Reflective agent</h3><p>If retrieval relevance is low, the agent re-queries the knowledge base using the CNN's visual hint before deciding.</p></div>
+<div class="card"><h3>Cost &amp; latency telemetry</h3><p>Every response reports route, latency, tokens and USD cost; <code>/metrics</code> aggregates fallback rate and spend.</p></div>
+<div class="card"><h3>Threshold calibration</h3><p>A sweep picks the cheapest threshold that keeps quality retention above your target.</p></div>
+<div class="card"><h3>Hardened API</h3><p>Typed Pydantic schemas, attachment size and format checks, and file access restricted to the data directory.</p></div>
+<div class="card"><h3>Containerised</h3><p>Multi-stage CUDA image plus Compose services for the API, ChromaDB and a vLLM worker.</p></div>
+</div></section>
 <section id="architecture"><h2>Architecture</h2><p class="sub">From ticket to decision, with a safety net.</p>
 <div class="flow">
 <div class="node">Ticket + image</div><span class="arr">→</span>
@@ -97,7 +125,8 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr
 <section id="router"><h2>Router simulator</h2><p class="sub">Drag the threshold to see the cost/quality trade-off.</p>
 <div class="card"><label>Threshold τ = <b id="tv">0.85</b></label><input type="range" id="thr" min="0.5" max="0.99" step="0.01" value="0.85">
 <div class="stats"><div class="stat"><b id="s1">–</b><small>served locally</small></div><div class="stat"><b id="s2">–</b><small>accuracy</small></div><div class="stat"><b id="s3">–</b><small>quality retention</small></div><div class="stat"><b id="s4">–</b><small>cost vs frontier-only</small></div></div>
-<p class="note">Illustrative simulation on synthetic confidence scores, not measured results. Real numbers appear below after you run the benchmark.</p></div></section>
+<p class="note">Illustrative simulation on synthetic confidence scores, not measured results. Real numbers appear below after you run the benchmark.</p></div>
+<div class="card" style="margin-top:14px"><b class="live">Live routing stream</b> <span class="note">(simulated)</span><div class="trace" id="feed" style="max-height:190px"></div></div></section>
 
 <section id="benchmark"><h2>Benchmark</h2><p class="sub">Measured by <code>python -m evaluation.benchmark</code>; the file <code>docs/data/benchmark.json</code> feeds this table.</p>
 <div class="card scroll" id="bench">Loading…</div></section>
@@ -114,6 +143,11 @@ python -m evaluation.calibrate_threshold
 python -m evaluation.benchmark
 docker compose -f deployment/docker-compose.yml up --build</pre></section>
 
+<section id="faq"><h2>FAQ</h2>
+<details><summary>Is my Groq key safe?</summary><p>It lives in your browser's localStorage and is sent only to api.groq.com. Use a key you can revoke, and remove it any time from the assistant settings.</p></details>
+<details><summary>Are the benchmark numbers real?</summary><p>Only after you run the benchmark yourself. The simulator and live stream on this page are illustrations, and they are labelled as such.</p></details>
+<details><summary>Can I self-host the whole stack?</summary><p>Yes. The repository includes the training scripts, API and Docker Compose files. Training needs a CUDA GPU.</p></details>
+</section>
 <section id="about"><h2>About the developer</h2>
 <div class="card"><h3>NIKHIL CHARY SRIRAMOJU</h3>
 <p>B.Tech Computer Science &amp; Engineering (2023–2027), Vaagdevi College of Engineering · Thorrur, Telangana, India</p>
@@ -142,16 +176,16 @@ const $=id=>document.getElementById(id);
 const store={get:k=>{try{return localStorage.getItem(k)||""}catch(e){return ""}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},del:k=>{try{localStorage.removeItem(k)}catch(e){}}};
 const getKey=()=>store.get("mr_groq_key"),getModel=()=>store.get("mr_groq_model")||"llama-3.3-70b-versatile";
 $("model").value=getModel();$("key").value=getKey();
-function saveKey(){store.set("mr_groq_key",$("key").value.trim());store.set("mr_groq_model",$("model").value.trim()||"llama-3.3-70b-versatile");toggleSettings(false);say("a","Saved. The key stays in this browser only.")}
+function saveKey(){store.set("mr_groq_key",$("key").value.trim());store.set("mr_groq_model",$("model").value.trim()||"llama-3.3-70b-versatile");toggleSettings(false);say("a","Saved. Checking available models…");discover().then(m=>say("a","Connected. Using model: "+m)).catch(e=>say("a","⚠ "+e.message))}
 function clearKey(){store.del("mr_groq_key");$("key").value="";say("a","Key removed.")}
 function toggleSettings(f){$("cs").classList.toggle("open",f)}
 function toggleChat(f,settings){const c=$("chat");c.classList.toggle("open",f===undefined?!c.classList.contains("open"):f);if(settings)toggleSettings(true);if(c.classList.contains("open")&&!$("msgs").children.length)say("a","Hi! I'm Nikhil's assistant. Ask me about ModelRoute Enterprise or about Nikhil. Add a free Groq key via ⚙ to chat.")}
 function say(r,t){const d=document.createElement("div");d.className="m "+r;d.textContent=t;$("msgs").appendChild(d);$("msgs").scrollTop=1e9;return d}
-async function groq(messages,tools){
+async function groq(messages,tools,retried){
   const key=getKey();if(!key)throw new Error("Add your free Groq API key first (⚙ in the assistant).");
   const body={model:getModel(),messages,temperature:0.2};if(tools){body.tools=tools;body.tool_choice="auto"}
   const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+key},body:JSON.stringify(body)});
-  const j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||("HTTP "+r.status));return j}
+  const j=await r.json();if(!r.ok){const m=j.error&&j.error.message||("HTTP "+r.status);if(!retried&&/model/i.test(m)){await discover();return groq(messages,tools,true)}throw new Error(m)}return j}
 
 /* ---- personal assistant ---- */
 const CTX="You are the personal assistant on the portfolio page of NIKHIL CHARY SRIRAMOJU. Be concise and friendly. Facts about Nikhil: B.Tech CSE (2023-2027) at Vaagdevi College of Engineering, Thorrur, Telangana, India; ML Engineer Intern at Yuva Intern (NSDC) Aug-Sep 2026; Data Analytics Intern at Thiranex Jul-Aug 2026; certifications from NASSCOM/Skill India Digital Hub, IBM SkillsBuild, Reliance Foundation; GitHub github.com/Nikhil-creat. Project ModelRoute Enterprise: multimodal support-ticket routing with a 4-bit QLoRA fine-tuned Llama-3-8B/Qwen-2.5-7B (r=16, alpha=32), PyTorch ResNet18 CNN for attachments (UI_ERROR, HARDWARE_FAULT, SPAM_IMAGE, VALID_DOCUMENT), agentic hybrid RAG (ChromaDB + BM25), confidence router C_total=w1*C_text+w2*C_vision+w3*C_rag falling back to GPT-4o/Claude/Groq below a calibrated threshold, FastAPI + Docker + vLLM. Never invent facts about Nikhil beyond these; say you don't know instead. Benchmarks are only real once the user runs evaluation.benchmark.";
@@ -216,6 +250,25 @@ fetch("data/benchmark.json").then(r=>r.json()).then(d=>{const b=$("bench");
   const rows=d.modes.map(m=>`<tr><td>${m.mode}</td><td>${m.accuracy.toFixed(1)}</td><td>${m.macro_f1.toFixed(1)}</td><td>${m.p95_latency_ms.toFixed(0)}</td><td>${m.total_tokens}</td><td>${m.cost_per_1k_usd.toFixed(3)}</td><td>${m.fallback_rate_pct.toFixed(1)}</td><td>${m.quality_retention_pct.toFixed(1)}</td></tr>`).join("");
   b.innerHTML=`<table><thead><tr><th>Mode</th><th>Acc %</th><th>Macro-F1</th><th>p95 ms</th><th>Tokens</th><th>$/1k</th><th>Fallback %</th><th>Retention %</th></tr></thead><tbody>${rows}</tbody></table><p class="note" style="color:var(--mu)">n=${d.n} ${d.split} tickets · threshold ${d.threshold} · frontier ${d.frontier_model}</p>`
 }).catch(()=>{$("bench").textContent="Benchmark data unavailable."});
+
+async function discover(){const r=await fetch("https://api.groq.com/openai/v1/models",{headers:{Authorization:"Bearer "+getKey()}});const j=await r.json();if(!r.ok)throw new Error(j.error&&j.error.message||"Could not list models (check the key)");
+  const ids=(j.data||[]).map(m=>m.id).filter(i=>!/whisper|tts|guard|embed|playai|orpheus|safeguard/i.test(i));
+  for(const p of [/llama-3\.3-70b/,/gpt-oss-120b/,/llama-4/,/qwen/,/70b/,/gpt-oss/,/8b/]){const m=ids.find(i=>p.test(i));if(m){store.set("mr_groq_model",m);$("model").value=m;return m}}
+  if(ids[0]){store.set("mr_groq_model",ids[0]);$("model").value=ids[0];return ids[0]}throw new Error("No chat models available for this key")}
+/* ---- futuristic layer ---- */
+(()=>{const calm=matchMedia("(prefers-reduced-motion:reduce)").matches,c=$("bg"),x=c.getContext("2d");let W,H,P=[];
+  const rs=()=>{W=c.width=innerWidth;H=c.height=innerHeight;P=Array.from({length:Math.min(44,W/12|0)},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35}))};rs();addEventListener("resize",rs);
+  (function f(){if(!document.hidden){x.clearRect(0,0,W,H);P.forEach(p=>{if(!calm){p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H}x.fillStyle="rgba(34,211,238,.8)";x.fillRect(p.x,p.y,2,2)});
+    for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);if(d<120){x.strokeStyle="rgba(139,92,246,"+(.28*(1-d/120))+")";x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}}}
+    requestAnimationFrame(f)})()})();
+addEventListener("scroll",()=>{$("pg").style.width=100*scrollY/Math.max(1,document.body.scrollHeight-innerHeight)+"%"},{passive:true});
+document.querySelectorAll("section").forEach(e=>e.classList.add("reveal"));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;e.target.classList.add("in");
+  e.target.querySelectorAll("[data-n]").forEach(n=>{if(n.dataset.d)return;n.dataset.d=1;const t=+n.dataset.n,s=performance.now();(function u(now){const k=Math.min(1,(now-s)/1200);n.textContent=Math.round(t*k).toLocaleString();if(k<1)requestAnimationFrame(u)})(s)})}),{threshold:.12});
+document.querySelectorAll(".reveal,.hero").forEach(e=>io.observe(e));
+document.querySelectorAll("pre").forEach(p=>{const b=document.createElement("button");b.className="btn alt cp";b.textContent="Copy";b.onclick=()=>{navigator.clipboard.writeText(p.innerText.replace(/^Copy\n?/,"")).then(()=>{b.textContent="Copied";setTimeout(()=>b.textContent="Copy",1400)})};p.appendChild(b)});
+const INT=KB.map(k=>k[1]);setInterval(()=>{if(document.hidden)return;const c=1-Math.pow(Math.random(),2.1)*.55,t=+$("thr").value,loc=c>=t,f=$("feed"),d=document.createElement("div");
+  d.className=loc?"r":"w";d.textContent=new Date().toLocaleTimeString()+"  "+INT[Math.random()*INT.length|0].padEnd(24)+" C="+c.toFixed(2)+"  → "+(loc?"LOCAL":"FRONTIER");f.prepend(d);while(f.children.length>30)f.lastChild.remove()},1500);
 </script>
 </body>
 </html>
